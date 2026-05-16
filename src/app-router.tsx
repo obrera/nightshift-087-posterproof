@@ -8,7 +8,7 @@ export const appRouter = createBrowserRouter(
   [
     {
       children: [
-        { element: <Navigate replace to="/wallet" />, index: true },
+        { element: <Navigate replace to="/proof" />, index: true },
         {
           lazy: () => import('@/about/feature/about-feature'),
           path: 'about',
@@ -16,6 +16,10 @@ export const appRouter = createBrowserRouter(
         {
           lazy: () => import('@/wallet/feature/wallet-feature'),
           path: 'wallet',
+        },
+        {
+          lazy: () => import('@/posterproof/feature/posterproof-feature'),
+          path: 'proof',
         },
         {
           lazy: () => import('@/shell/feature/shell-not-found-feature'),
@@ -31,6 +35,11 @@ export const appRouter = createBrowserRouter(
                 title: 'Wallet',
                 to: '/wallet',
               },
+              {
+                description: 'Compose and mint an artwork provenance proof packet.',
+                title: 'PosterProof',
+                to: '/proof',
+              },
             ],
           }),
           path: '*',
@@ -39,6 +48,7 @@ export const appRouter = createBrowserRouter(
       element: (
         <ShellFeature
           links={[
+            { label: 'PosterProof', to: '/proof' },
             { label: 'Wallet', to: '/wallet' },
             { label: 'About', to: '/about' },
           ]}

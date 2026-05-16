@@ -1,0 +1,19 @@
+services:
+  posterproof087:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: posterproof087
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.posterproof087.rule=Host(`posterproof087.colmena.dev`)
+      - traefik.http.routers.posterproof087.entrypoints=websecure
+      - traefik.http.routers.posterproof087.tls.certresolver=letsencrypt
+      - traefik.http.services.posterproof087.loadbalancer.server.port=3000
+    networks:
+      - dokploy-network
+    restart: unless-stopped
+
+networks:
+  dokploy-network:
+    external: true
