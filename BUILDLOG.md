@@ -68,6 +68,7 @@
 - Static health path: `/__/health`, provided by `beeman/static-server`.
 - Dokploy network: `dokploy-network` external network in `docker-compose.yml`.
 - Static server target port in `docker-compose.yml`: 9876.
+- Docker install skips lifecycle scripts so the `lefthook install` prepare hook does not require `git` inside the Bun build image.
 
 ## Proof Artifact
 
