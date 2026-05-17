@@ -9,9 +9,9 @@ export default function ShellFeatureLayout({
   links,
 }: PropsWithChildren<{ links: HeaderLink[] }>) {
   return (
-    <div className="flex h-full min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col overflow-x-clip">
       <ShellUiHeader links={links} />
-      <main className="min-h-0 flex-1 overflow-auto">
+      <main className="flex-1">
         <Suspense>{children}</Suspense>
       </main>
       <ShellUiFooter />

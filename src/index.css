@@ -127,7 +127,10 @@
   html {
     @apply font-sans;
     }
-  html, body, #root {
-    @apply h-full;
+  html {
+    @apply min-h-full overflow-x-hidden;
+    }
+  body, #root {
+    @apply min-h-full overflow-x-clip;
     }
 }
