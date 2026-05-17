@@ -1,9 +1,10 @@
 FROM oven/bun:1.3.12 AS build
 WORKDIR /app
 COPY package.json bun.lock ./
-RUN bun install
+RUN bun install --frozen-lockfile --minimum-release-age=0
 COPY . .
 RUN bun run build
 
-FROM lipanski/docker-static-website:2.4.0
-COPY --from=build /app/dist .
+FROM beeman/static-server:latest
+COPY --from=build /app/dist /workspace/app
+EXPOSE 9876

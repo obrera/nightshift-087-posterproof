@@ -65,9 +65,9 @@
 ## Deployment Notes
 
 - Live target: https://posterproof087.colmena.dev
-- Static health path: `/health`, provided by `public/health`.
+- Static health path: `/__/health`, provided by `beeman/static-server`.
 - Dokploy network: `dokploy-network` external network in `docker-compose.yml`.
-- Static server target port in `docker-compose.yml`: 3000.
+- Static server target port in `docker-compose.yml`: 9876.
 
 ## Proof Artifact
 

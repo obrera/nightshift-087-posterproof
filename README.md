@@ -56,7 +56,7 @@ Verified devnet proof mint:
 
 ## Deployment
 
-`Dockerfile` builds the Vite app and serves static files. `docker-compose.yml` targets Dokploy/Traefik on the external `dokploy-network`. Static health is available at `/health` from `public/health`.
+`Dockerfile` builds the Vite app and serves static files with `beeman/static-server`. `docker-compose.yml` targets Dokploy/Traefik on the external `dokploy-network` and routes to container port `9876`. Static health is available at `/__/health`.
 
 ## Package
 
