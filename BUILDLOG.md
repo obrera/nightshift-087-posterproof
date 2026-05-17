@@ -53,6 +53,7 @@
 | 01:45 | Removed the invalid Dokploy healthcheck because the final `beeman/static-server` image does not provide `wget` or a shell for the previous command. |
 | 01:46 | Re-ran install, lint fix, typecheck, production build, live devnet proof mint, package helper check, and forbidden import/package guard searches. |
 | 01:46 | Replaced the stale devnet RPC failure notes with the live proof asset and transaction from this run. |
+| 09:30 | Fixed deployed metadata URLs by replacing pure static hosting with a Bun static + metadata server for `/metadata/{packetHash}.json` and `/metadata/{packetHash}.svg`. |
 
 ## Validation Log
 
@@ -66,13 +67,15 @@
 - Guard search for `@solana/web3.js`, `@solana/wallet-adapter`, and `wallet-adapter` in `package.json`, `bun.lock`, `src`, and `scripts`: passed with no matches.
 - Guard search for vendored/dist/file-package bypasses in `package.json`, `bun.lock`, `src`, and `scripts`: passed with no matches for package specifiers or MPL Core bypass paths.
 - Guard search for Node `Buffer` usage in `package.json`, `src`, and `scripts`: passed with no matches.
+- `curl -i http://127.0.0.1:18887/metadata/9cc5f807ae6c653df49dfe8e1e2d385e90f16d4417caf08858e5d09a67e80417.json`: passed locally with `content-type: application/json; charset=utf-8`.
+- `curl -i http://127.0.0.1:18887/metadata/9cc5f807ae6c653df49dfe8e1e2d385e90f16d4417caf08858e5d09a67e80417.svg`: passed locally with `content-type: image/svg+xml; charset=utf-8`.
 
 ## Deployment Notes
 
 - Live target: https://posterproof087.colmena.dev
-- Static health path: `/__/health`, provided by `beeman/static-server`.
+- Health paths: `/health` and `/api/health`, provided by `scripts/server.mjs`.
 - Dokploy network: `dokploy-network` external network in `docker-compose.yml`.
-- Static server target port in `docker-compose.yml`: 9876.
+- Bun server target port in `docker-compose.yml`: 9876.
 - Docker install skips lifecycle scripts so the `lefthook install` prepare hook does not require `git` inside the Bun build image.
 
 ## Proof Artifact

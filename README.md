@@ -55,10 +55,11 @@ Verified devnet proof mint from 2026-05-17 01:46 UTC:
 - Minting is designed as wallet-signed client-side work. There is no server mint, custodial key, or backend signer.
 - The connected wallet is payer, authority, owner, and update authority. The intended proof asset metadata URI is shaped as `https://posterproof087.colmena.dev/metadata/{packetHash}.json`.
 - Local browser storage keeps recent proof records with asset address, transaction signature, packet hash, metadata URI, readiness signature, and scan result for verifier review.
+- The deployed container serves `/metadata/{packetHash}.json` and `/metadata/{packetHash}.svg` dynamically for any 64-character packet hash, so minted proof URIs resolve to NFT metadata instead of the SPA fallback.
 
 ## Deployment
 
-`Dockerfile` builds the Vite app and serves static files with `beeman/static-server`. `docker-compose.yml` targets Dokploy/Traefik on the external `dokploy-network` and routes to container port `9876`. Static health is available at `/__/health`.
+`Dockerfile` builds the Vite app and serves it with the Bun runtime in `scripts/server.mjs`. The same runtime serves dynamic metadata JSON/SVG routes. `docker-compose.yml` targets Dokploy/Traefik on the external `dokploy-network` and routes to container port `9876`. Health is available at `/health` and `/api/health`.
 
 ## Package
 
