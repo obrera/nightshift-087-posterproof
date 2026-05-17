@@ -40,11 +40,13 @@ bun run proof:mint
 
 The live mint script uses devnet and a signer supplied by `POSTERPROOF_DEVNET_SIGNER_KEYPAIR` as a keypair path, JSON array, CSV bytes, or base64 bytes. Set `POSTERPROOF_SKIP_AIRDROP=1` when using a pre-funded payer.
 
-Verified devnet proof mint:
+Verified devnet proof mint from 2026-05-17 01:46 UTC:
 
-- Asset address: `3DMxLph3G2Ud8JsHPkRBj1epK87KkRCLxGN1e7o6sBf1`
-- Transaction signature: `4Bd5QAp1s5AW9BpjNXbGkXQaPG9cdGvL2FBA5uzJ5vhaX5n8t8gvpG7LXXJG2gUKM1bA9qqqHqvjqFw1wns4DN7i`
-- Metadata URI: `https://posterproof087.colmena.dev/metadata/739888e9f3d55502a823707b83cda0085a615935dfa4b32a421ce1ca7ac8d3db.json`
+- Command: `POSTERPROOF_DEVNET_SIGNER_KEYPAIR=/home/obrera/keys/obrE1BHvP4EX8PkxPxAJxYfQkgfgCmXyJadQA3yBb7G.json POSTERPROOF_SKIP_AIRDROP=1 bun run proof:mint`
+- Asset address: `6KULRE8pLP9bRQpMohd72hiHGdBZoJfUxTDArHPmxzuR`
+- Transaction signature: `5CDQCAdEbWhSn895Qes9CTDxJAswZXpPKtt5kRdFQY8xUViwBtfwgsHEB3b3sHdnuj7xAeEn9iY5jy1AnsFWkB6s`
+- Metadata URI: `https://posterproof087.colmena.dev/metadata/436e0fa35a7473128ea1854dc256611a084d3d2f925402aa2ae354ef6f87eddf.json`
+- Exact script output: `{"assetAddress":"6KULRE8pLP9bRQpMohd72hiHGdBZoJfUxTDArHPmxzuR","metadataUri":"https://posterproof087.colmena.dev/metadata/436e0fa35a7473128ea1854dc256611a084d3d2f925402aa2ae354ef6f87eddf.json","ok":true,"payerAddress":"obrE1BHvP4EX8PkxPxAJxYfQkgfgCmXyJadQA3yBb7G","txSignature":"5CDQCAdEbWhSn895Qes9CTDxJAswZXpPKtt5kRdFQY8xUViwBtfwgsHEB3b3sHdnuj7xAeEn9iY5jy1AnsFWkB6s"}`
 
 ## Solana Architecture
 
