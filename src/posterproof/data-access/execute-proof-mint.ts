@@ -1,6 +1,6 @@
 import type { useWalletUiSigner } from '@wallet-ui/react'
 
-import { getCreateV1Instruction } from '@obrera/mpl-core-kit-lib/generated'
+import { getCreateV1Instruction, MPL_CORE_PROGRAM_ADDRESS } from '@obrera/mpl-core-kit-lib/generated'
 import {
   type Address,
   appendTransactionMessageInstruction,
@@ -15,8 +15,6 @@ import {
 } from '@solana/kit'
 
 import type { SolanaClient } from '@/solana/data-access/solana-client'
-
-const mplCoreProgramAddress = 'CoREENxT1ttXcRQA7jJZxGzDrJr3e9Fp3uL5X1YvCxy'
 
 export interface ProofMintInput {
   client: SolanaClient
@@ -63,20 +61,20 @@ export async function executeProofMint({ client, metadataUri, name, transactionS
 }
 
 function validatePublishedCreateInstruction(instruction: ReturnType<typeof getCreateV1Instruction>) {
-  if (instruction.programAddress !== mplCoreProgramAddress) {
+  if (instruction.programAddress !== MPL_CORE_PROGRAM_ADDRESS) {
     throw new Error(`Published package returned unexpected MPL Core program address: ${instruction.programAddress}`)
   }
-  const accounts = instruction.accounts ?? []
+  const accounts = instruction.accounts as readonly unknown[]
   const data = instruction.data ?? new Uint8Array()
 
   if (accounts.length === 0) {
     throw new Error(
-      '@obrera/mpl-core-kit-lib@0.0.2 generated getCreateV1Instruction has no account metas; published package is a placeholder and cannot create an MPL Core asset.',
+      '@obrera/mpl-core-kit-lib generated getCreateV1Instruction has no account metas; package output is invalid and cannot create an MPL Core asset.',
     )
   }
   if (data.length <= 1) {
     throw new Error(
-      '@obrera/mpl-core-kit-lib@0.0.2 generated getCreateV1Instruction has placeholder instruction data; published package cannot create an MPL Core asset.',
+      '@obrera/mpl-core-kit-lib generated getCreateV1Instruction has insufficient instruction data; package output is invalid and cannot create an MPL Core asset.',
     )
   }
 }

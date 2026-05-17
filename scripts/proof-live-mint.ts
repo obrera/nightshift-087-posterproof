@@ -1,20 +1,19 @@
-import { getCreateV1Instruction } from '@obrera/mpl-core-kit-lib/generated'
+import { getCreateV1Instruction, MPL_CORE_PROGRAM_ADDRESS } from '@obrera/mpl-core-kit-lib/generated'
 import {
   appendTransactionMessageInstruction,
   createKeyPairSignerFromBytes,
   createSolanaRpc,
   createTransactionMessage,
   generateKeyPairSigner,
-  getBase58Decoder,
+  getBase64EncodedWireTransaction,
+  getSignatureFromTransaction,
   pipe,
   setTransactionMessageFeePayerSigner,
   setTransactionMessageLifetimeUsingBlockhash,
-  signAndSendTransactionMessageWithSigners,
+  signTransactionMessageWithSigners,
 } from '@solana/kit'
 
 const devnetHttp = 'https://api.devnet.solana.com'
-const mplCoreProgramAddress = 'CoREENxT1ttXcRQA7jJZxGzDrJr3e9Fp3uL5X1YvCxy'
-
 function base64ToBytes(value: string) {
   const binary = atob(value)
   const bytes = new Uint8Array(binary.length)
@@ -98,12 +97,23 @@ async function main() {
       (transactionMessage) => appendTransactionMessageInstruction(createInstruction, transactionMessage),
     )
 
-    stage = 'sign and send mpl core proof transaction'
-    const signatureBytes = await signAndSendTransactionMessageWithSigners(message)
-    const txSignature = getBase58Decoder().decode(signatureBytes)
+    stage = 'sign mpl core proof transaction'
+    const signedTransaction = await signTransactionMessageWithSigners(message)
+    const txSignature = getSignatureFromTransaction(signedTransaction)
+    if (!txSignature) {
+      throw new Error('MPL Core proof transaction was signed but no transaction signature was available.')
+    }
+
+    stage = 'send mpl core proof transaction'
+    await rpc
+      .sendTransaction(getBase64EncodedWireTransaction(signedTransaction), {
+        encoding: 'base64',
+        preflightCommitment: 'confirmed',
+      })
+      .send()
 
     stage = 'verify mpl core asset account'
-    const assetAccount = await rpc.getAccountInfo(asset.address, { commitment: 'confirmed', encoding: 'base64' }).send()
+    const assetAccount = await waitForConfirmedAssetAccount(rpc, asset.address)
     if (!assetAccount.value) {
       throw new Error('MPL Core asset account was not found after confirmed transaction.')
     }
@@ -148,19 +158,37 @@ async function readSignerInput(value: string) {
 }
 
 function validatePublishedCreateInstruction(instruction: ReturnType<typeof getCreateV1Instruction>) {
-  if (instruction.programAddress !== mplCoreProgramAddress) {
+  if (instruction.programAddress !== MPL_CORE_PROGRAM_ADDRESS) {
     throw new Error(`Published package returned unexpected MPL Core program address: ${instruction.programAddress}`)
   }
-  if (!('accounts' in instruction) || instruction.accounts.length === 0) {
+  const accounts = 'accounts' in instruction ? (instruction.accounts as readonly unknown[]) : []
+  const data = 'data' in instruction ? instruction.data : new Uint8Array()
+
+  if (accounts.length === 0) {
     throw new Error(
-      '@obrera/mpl-core-kit-lib@0.0.2 generated getCreateV1Instruction has no account metas; published package is a placeholder and cannot create an MPL Core asset.',
+      '@obrera/mpl-core-kit-lib generated getCreateV1Instruction has no account metas; package output is invalid and cannot create an MPL Core asset.',
     )
   }
-  if (!('data' in instruction) || instruction.data.length <= 1) {
+  if (data.length <= 1) {
     throw new Error(
-      '@obrera/mpl-core-kit-lib@0.0.2 generated getCreateV1Instruction has placeholder instruction data; published package cannot create an MPL Core asset.',
+      '@obrera/mpl-core-kit-lib generated getCreateV1Instruction has insufficient instruction data; package output is invalid and cannot create an MPL Core asset.',
     )
   }
+}
+
+async function waitForConfirmedAssetAccount(
+  rpc: ReturnType<typeof createSolanaRpc>,
+  assetAddress: Awaited<ReturnType<typeof generateKeyPairSigner>>['address'],
+) {
+  const deadline = Date.now() + 30_000
+  let assetAccount = await rpc.getAccountInfo(assetAddress, { commitment: 'confirmed', encoding: 'base64' }).send()
+
+  while (!assetAccount.value && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 1_000))
+    assetAccount = await rpc.getAccountInfo(assetAddress, { commitment: 'confirmed', encoding: 'base64' }).send()
+  }
+
+  return assetAccount
 }
 
 await main()
