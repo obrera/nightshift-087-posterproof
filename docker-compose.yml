@@ -16,9 +16,10 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      - dokploy-network
+      - default
     restart: unless-stopped
 
 networks:
-  dokploy-network:
+  default:
+    name: dokploy-network
     external: true
