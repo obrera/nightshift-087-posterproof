@@ -22,6 +22,7 @@ console.log(`${appName} server listening on :${port}`)
 
 async function handleRequest(request) {
   const url = new URL(request.url)
+  const publicOrigin = getPublicOrigin(url)
 
   if (url.pathname === '/health') {
     return textResponse('ok')
@@ -44,7 +45,7 @@ async function handleRequest(request) {
 
   const metadataMatch = url.pathname.match(/^\/metadata\/([a-f0-9]{64})\.(json|svg)$/u)
   if (metadataMatch?.[2] === 'json') {
-    return jsonResponse(createMetadata(url.origin, metadataMatch[1]))
+    return jsonResponse(createMetadata(publicOrigin, metadataMatch[1]))
   }
   if (metadataMatch?.[2] === 'svg') {
     return svgResponse(createMetadataSvg(metadataMatch[1]))
@@ -104,6 +105,13 @@ function createMetadataSvg(packetHash) {
 function getContentType(pathname) {
   const extension = pathname.match(/\.[^./?#]+$/u)?.[0]
   return (extension && contentTypes[extension]) || 'application/octet-stream'
+}
+
+function getPublicOrigin(url) {
+  if (url.host === host) {
+    return `https://${host}`
+  }
+  return url.origin
 }
 
 function jsonResponse(body, status = 200) {
